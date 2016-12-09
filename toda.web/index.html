@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>DB屋さんがApache Spark をいい感じにした話</title>
+  <title>Apache Spark を前向きにやっていく</title>
   <link rel="stylesheet" href="//cdn.jsdelivr.net/reveal.js/2.6.2/css/reveal.min.css" />
   <link rel="stylesheet" href="//cdn.jsdelivr.net/reveal.js/2.6.2/css/theme/default.css" id="theme" />
   <link rel="stylesheet" href="//cdn.jsdelivr.net/reveal.js/2.6.2/lib/css/zenburn.css" />
@@ -139,60 +139,6 @@ Hadoopは、世界一有名なMapReduceソフトウェア
 
 
 
-#エラーの話
-
-
-
-コンパイルしない系言語、実行時エラーがつらい
-
-
-
-- しかしまあ、最低限の構文チェックはしてくれる
-- じゃないと開発速度がガンガンおそくなる
-- LintやIDEも役に立つ
-
-
-
-**しかしpysparkはAPI**
-
-Pythonの構文チェックはするけど、投げる先のことはしらん
-
-
-
-### 実際やってみましょう
-
-惜しいコードを書いて動かしてみる
-
-
-
-```
-    df_pivot = df_all.groupBy(['band']).pivot('part')
-    df_pivot.show()
-```
-
-
-
-![実行時の様子](https://raw.githubusercontent.com/karashi39/Hello39/image/images/bad.py.gif)
-
-
-
-実行して処理が始まってから構文エラーが出てる
-
-
-
-- 処理単位でいちいちjarを作っていてそのたびにコンパイルしている？
-- そのため構文エラーが処理の途中ででる
-
-
-
-## つらい
-
-
-
-# はい
-
-
-
 # ドキュメントの話
 
 
@@ -258,6 +204,104 @@ RDBっぽいからね
 
 
 ## はい
+
+
+
+### おまけ
+
+
+
+DataFrameはRDBっぽくて、RDBじゃない
+
+
+
+# INSERTがない
+
+
+
+```
+SQL> INSERT INTO m_hoge VALUES (22, 'the spa kusatsu', 'GK');
+```
+
+
+
+```
+# get schema of target DataFrame
+player_schema = df_soccer_player.schema
+
+# create DataFrame to add
+kita_kazuma = [[22, 'the spa kusatu', 'GK']]
+df_kita_kazuma = createDataFrame(kita_kazuma, schema=player_schema)
+
+# insert
+df_soccer = df_soccer.union(df_kita_kazuma)
+```
+
+
+
+### うそでしょ...
+
+
+
+### PythonのPandas DataFrameにはinsertある
+
+
+
+##### はい
+
+
+
+#エラーの話
+
+
+
+コンパイルしない系言語、実行時エラーがつらい
+
+
+
+- しかしまあ、最低限の構文チェックはしてくれる
+- じゃないと開発速度がガンガンおそくなる
+- LintやIDEも役に立つ
+
+
+
+**しかしpysparkはAPI**
+
+Pythonの構文チェックはするけど、投げる先のことはしらん
+
+
+
+### 実際やってみましょう
+
+惜しいコードを書いて動かしてみる
+
+
+
+```
+    df_pivot = df_all.groupBy(['band']).pivot('part')
+    df_pivot.show()
+```
+
+
+
+![実行時の様子](https://raw.githubusercontent.com/karashi39/Hello39/image/images/bad.py.gif)
+
+
+
+実行して処理が始まってから構文エラーが出てる
+
+
+
+- 処理単位でいちいちjarを作っていてそのたびにコンパイルしている？
+- そのため構文エラーが処理の途中ででる
+
+
+
+## つらい
+
+
+
+# はい
 
 
 
@@ -446,7 +490,11 @@ df_cross.show()
 
 
 
-#仕事をください
+## 前向き
+
+
+
+##### 前向き大事
 
 
 
@@ -480,4 +528,3 @@ df_cross.show()
 
 </body>
 </html>
-
