@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# LT - karashi39
+
+hachioji.pm #62
+
+---
+
+# karashi39とはいったい
+
+- データベースのファーマシーだったことがある(出所しました)
+- さいきんプログラマーになりました
+- Toda.webというものをやりました
+- WEBをやったことがない
+
+@arashi39karashi
+
+---
+
+# さいきんの話
+
+Apache Spark をやってます
+
+MapReduceをやるやつらしい
+
+---
+
+# MapReduceとは...?
+
+![MapReduce Icon](http://www.kitaiti.com/resources/upload/products/thumbnail2/327056.jpg)
+
+たぶんみなさん知っているので釈迦に説法はスキップ
+
+---
+class: middle
+
+StorageLevel
+
+- MEMORY_ONLY
+- MEMORY_ONLY_SER
+- DISK_AND_MEMORY
+- DISK_AND_MEMORY_SER
+- DISK_ONLY
+
+処理途中のデータをどう保持するかのパラメータ
+
+---
+
+class: middle
+
+pythonでやったばあい、_SERがついていてもついていなくても同じ
+
+デフォルトであるMEMORY_ONLYだと、マップしっぱなしの非正規化データを対象に処理をするので、  
+処理を重ねれば重ねるほど、次の処理が遅くなる  
+処理を重ねる=計算元のデータが巨大になる みたいな感じっぽかった
+
+SERをつかったり、DISKをつかったりすると速くなる
+
+---
+
+## つらいエラー
+
+<hr>
+[Stage 18:>        (3591 + 68) / 140608][Stage 19:>               (0 + 0) / 167]16/12/20 09:31:18 ERROR LiveListenerBus: **Dropping SparkListenerEvent because no remaining room in event queue.** This likely means one of the SparkListeners is too slow and cannot keep up with the rate at which tasks are being started by the scheduler.
+<hr>
+
+キューに処理がたまりすぎてエラー  
+
+キューに入らなかったジョブはやりなおすっぽいけど、
+本当に大丈夫なのかよくわからなかったし、
+処理時間はめちゃくちゃながくなるし、
+スタックとレースがでまくるので、嫌だった
+
+キューの長さを変えたいけど、ドキュメントにはパラメータがない  
+ジョブを減らすなど他の方法もみつからなかった
+
+---
+class: middle
+
+ぐぐったらPRがマージされてたけど、
+
+> Note:
+I haven't currently documented the configuration entry.
+
+きびしい
+
+なんとかしました
+
+---
+class: middle
+
+- DISK_ONLYの設定にし、
+- listenerのevent_queueを馬鹿みたいに増やすと、
+
+無限に終わらなくなって便利  
+
+MapReduceのダメな方の本気を見ることができました
+
+---
+class: center, middle
+
+PGになりたくて転職したんですが、あまりコードが書けてない
+
+# 仕事をください
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
