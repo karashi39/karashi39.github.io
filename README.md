@@ -1,2 +1,2 @@
-- [hachioji.pm latest](karashi39.github.io/hachioji.pm)
-- [toda.web latest](karashi39.github.io/toda.web)
+- [hachioji.pm latest](https://karashi39.github.io/hachioji.pm)
+- [toda.web latest](https://karashi39.github.io/toda.web)
