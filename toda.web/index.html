@@ -12,7 +12,7 @@
   <div class="slides">
     <section data-markdown data-separator="^\n\n\n" data-vertical="^\n\n" data-notes="^Note:">
       <script type="text/template">
-# DB屋さんがApache Spark をいい感じにした話
+# Sparkの話をせねば
 
 
 
@@ -20,13 +20,15 @@
 
 - 佐藤将道
 - 過去：OracleDB構築やさん
-- 現在：Python初心者として頑張る
+- 現在：Pythonとして頑張る
 - Hachioji.pm
-- Toda.web
+- Tachikawa.pm
+- Saitama.web ~~Toda.web~~
+- 西東京煙管愛好者倶楽部
+- Pelikan Hubs Tokyo
 
 
-
-# DB屋さんがApache Spark をいい感じにした話
+# Sparkの話
 
 
 
@@ -78,424 +80,140 @@
 
 
 
-![img](https://www.tutorialspoint.com/map_reduce/images/mapreduce_work.jpg)
+# で、Spark
 
+MapReduceを実現したミドルウェア、Hadoopの進化版
 
 
-![img](https://www.tutorialspoint.com/map_reduce/images/mapreduce_example.jpg)
 
+# 本題
 
 
-- 分担している分、
-  - データのオーバーヘッド増える
-  - 処理も遅くなる
-- が、無理だったことができるようになるので吉日
 
+## EMR金かかりすぎ問題
 
+大規模データを処理するためのSparkを用意しようと思ったら、
+現実的にはAmazon Elastic Map Reduceを利用することになる。
 
-- 実際はMapReduceで一つ
-- MapReduceに処理を投げたら後のことは気にしない
-- 並列処理のコーディングとかをしなくて済む
-- 何も考えずスケールできる
+しかしこれが高い！
 
+大きなインスタンスでやることになるが、1日5000円とか、10000円とか、平気で飛んでいく
 
 
-逆に言うと、こちらで小細工をしないで、任せるのが良い
 
+計算に必要なリソースの見積もり方はよくわからない、動かしてみないと...
 
 
-- なるべく多くのことをMapReduceに任せないと、
-- クラスタ上で処理されなくて、意味なしになる
 
+### そこで重要なのが、事前のチューニング
 
+Mac上の開発環境で、できることはたくさんある
 
-で、Hadoop
+- データの再計算を防ぐ
+- データのダウンサイジングを事前に行う仕組みにする
 
+### EMRでもMacでも動くコードを用意する
 
+データストアがHDFSになっていて、Macと実際のクラスタ環境では動きが違う
 
-Hadoopは、世界一有名なMapReduceソフトウェア
+いろいろな種類の便利さがトレードオフになるけど、やはりEMR上での作業が少なくなる工夫が必要
 
+問題が起きたときの、確認用Hello Worldも、是非手元に置きましょう
 
 
-- MapReduceの処理時、作業をHDDでやる方法
-- HDDはいっぱいデータが乗る
 
+## テスト大変問題
 
+Sparkはやっぱり機械学習で使われる
 
-で、Spark
+機械学習のテストってどうすればよいのか
 
+- 誤差は毎回出る
+- というか結果の数値が全く予想できない
+- セッション貼って処理するので、部分部分のテストも難しい
 
+**途中のデータをダンプできるようにして、なんとか評価するしかない**
 
-作業場所をHDDではなくメモリーにした実装
 
-- HDDと比べて容量は下がる
-- 分担する人数は増える
-- オーバーヘッドはさらに大きい
-- RAMだから当然速い
 
+### 誤差の扱い
 
+機械学習をやっていれば、精度指標みたいなものはきっと知ってる(私は知らない)
 
-### はい
+数ある種類の精度指標から、適切なものを選んでる暇はない
 
+必要最低限、しかし何種類かの指標がすぐに出せるようにしておく
 
+精度の計算でリソース使いまくっても仕方ないので、ある程度は手元のMacで確認する
 
-# ドキュメントの話
 
 
+### テストコード
 
-# の前にデータの話
+テストコードはセッションの外側なので、途中の処理結果を書き出して、それを評価するのが良い
 
+すると不思議な事に、処理時間も短縮できる(再計算の発生を防いでいるからです)
 
 
-## Data Frame
 
-- Sparkでよく使われるデータ形式
-- 最初はRDDというものだった
-- RDBのテーブルみたいなもの
+#### Spark APIで書いたテストのコードは、StackOverFlowですらあてにならない
 
+- そもそも前提にしているSparkの仕様が古かったり
+- 回答している人が、プログラマというよりデータサイエンティストだったり
+- テストの需要はそんなになかったり
 
 
-## ORMっぽいもので操作することになる
 
-RDBっぽいからね
+# 良い方法知っている人、紹介してください
 
 
 
-## ORMよくわからん問題
+## なお
 
 
 
-- RDBっぽいけどRDBじゃない
-- SQL力が低いとつらい
-- やりたいことベースで調べても情報がない
-
-
-
-## ドキュメントよくわからん問題
-
-
-
-- ORMの使用例が書いてない
-- RDBと厳密には違うから想像できない部分もある
-- というかIn/Outすらちゃんと書いてない
-- いつ使えるのかも書いてない
-
-
-
-# !?
-
-
-
-- ？「OSSなんだからソース読もうよ
-- 私「MapReduceのアルゴリズムからですね...
-
-
-
-# 頑張るしかない
-
-
-
-- SQL力の高まりが必要
-  - SQLならできるのか？
-  - Sparkならできるのか？
-  - 二次元データに対しそういう処理は可能なのか？
-- 知見が少ないと無限時間が必要
-
-
-
-## はい
-
-
-
-### おまけ
-
-
-
-DataFrameはRDBっぽくて、RDBじゃない
-
-
-
-# INSERTがない
-
-
-
-```
-SQL> INSERT INTO m_hoge VALUES (22, 'the spa kusatsu', 'GK');
+```Python
+result = df.select('id', 'name', 'value').collect()
+print result[0]['value']
 ```
 
+とかやって数値を取り出す。
 
+非常にORMっぽい
 
-```
-# get schema of target DataFrame
-player_schema = df_soccer_player.schema
 
-# create DataFrame to add
-kita_kazuma = [[22, 'the spa kusatu', 'GK']]
-df_kita_kazuma = createDataFrame(kita_kazuma, schema=player_schema)
+## 注意) どこまで行っても、RDBではないという意識は重要
 
-# insert
-df_soccer = df_soccer.union(df_kita_kazuma)
-```
 
 
+## クラスター環境が多い話
 
-### うそでしょ...
+- スタンドアローン
+- YARN
+- Apache Mesos
 
 
 
-### PythonのPandas DataFrameにはinsertある
+### Amazon EMRはYARN
 
 
 
-##### はい
+### Macはスタンドアローン(?)
 
 
+### だからといってMesosを無視できない
 
-#エラーの話
+Apache純正であることだし...
 
 
 
-コンパイルしない系言語、実行時エラーがつらい
+## クラスタウェアによってセッティングが変わる
 
 
 
-- しかしまあ、最低限の構文チェックはしてくれる
-- じゃないと開発速度がガンガンおそくなる
-- LintやIDEも役に立つ
+とりあえず、ドキュメントの、Sparkの起動みたいなページを見れば良いということだけ覚えておきましょう。
 
-
-
-**しかしpysparkはAPI**
-
-Pythonの構文チェックはするけど、投げる先のことはしらん
-
-
-
-### 実際やってみましょう
-
-惜しいコードを書いて動かしてみる
-
-
-
-```
-    df_pivot = df_all.groupBy(['band']).pivot('part')
-    df_pivot.show()
-```
-
-
-
-![実行時の様子](https://raw.githubusercontent.com/karashi39/Hello39/image/images/bad.py.gif)
-
-
-
-実行して処理が始まってから構文エラーが出てる
-
-
-
-- 処理単位でいちいちjarを作っていてそのたびにコンパイルしている？
-- そのため構文エラーが処理の途中ででる
-
-
-
-## つらい
-
-
-
-# はい
-
-
-
-# crossjoinの話
-
-
-
-RDBでもcrossjoinはご法度
-
-
-
-でもやらないといけない時がある
-
-
-
-- たとえば
-  - 血液型テーブル[A, B, O, AB]   
-  - 性別テーブル[MEN, WOMEN]  
-- を掛け合わせたい  
-
-
-
-こんな結果が欲しい時はcrossjoin  
-
-----
-
-| Gender | Blood Type |
-| :----- | :--------- |
-| MEN    | A          |
-| MEN    | B          |
-| MEN    | O          |
-| MEN    | AB         |
-| WOMEN  | A          |
-| WOMEN  | B          |
-| WOMEN  | O          |
-| WOMEN  | AB         |
-
-----
-
-
-
-その方がわかりやすいSQLになる
-
-```
-SELECT gendor, blood_type FROM m_gendor JOIN m_blood_type;
-```
-
-
-
-元のデータがdistinctされていない場合がある  
-
-
-
-こんな元データを想定、ここからBlood Typeをdistinctする  
-
-----
-
-| Name      | Gender | Blood Type |
-| :-------- | :----- | :--------- |
-| Tsunoda   | MEN    | AB         |
-| Shimizu   | WOMEN  | O          |
-| Sato      | MEN    | AB         |
-| Yoshimura | WOMEN  | AB         |
-
-----
-
-
-
-```
-SELECT gender, blood_type 
-FROM (SELECT DISTINCT gender FROM raw_data) 
-JOIN (SELECT DISTINCT blood_type FROM raw_data)
-```
-
-これで、元データをcrossjoinするよりは速くなったはず
-
-
-
-最低限distinctしてからやる  
-
-
-
-----
-
-|Gender|Blood Type|
-|:-----|:---------|
-|MEN|O|
-|MEN|AB|
-|WOMEN|O|
-|WOMEN|AB|
-
-----
-
-
-
-**しかしMapReduceではそうはいかない**
-
-
-
-- MapReduceでは、全データを投げてあとは任せる
-- 結果として、ステップ間でチューニングできない
-- 元データをcrossjoinしてからdistinctしているように見える
-- distinctの記述を先に書いていても効果なし
-
-
-
-スクリプト言語じゃないの？
-
-
-
-#### Sparkに全部まかせた時のコード
-
-```
-df_m_gender = df_all.select(['gender']).distinct()
-df_m_blood_type = df_all.select(['blood_type']).distinct()
-df_cross = df_m_gender.join(df_m_blood_type)
-df_cross.show()
-```
-
-60秒で終了
-
-
-
-なんか遅い
-
-
-
-処理単位を丸投げした先で無駄にMapして処理して遅くなっている
-
-
-
-- Sparkの分散処理はJavaでうごく
-- ある程度まとまった処理単位でjarにして投げる
-
-
-
-**つまりSparkに任せると遅いケースが存在する**
-
-
-
-**だったら処理単位を無理やり分割すれば良い**
-
-
-
-#### 処理を分割する時のコード
-
-- 途中で無理やりPythonの配列型に変換して  
-- 再度DataFrameに戻すことで処理単位を分割
-
-```
-list_m_gender = df_all.select(['gender']).distinct().collect()
-list_m_blood_type = df_all.select(['blood_type']).distinct().collect()
-df_m_gender = spark.createDataFrame(list_m_gender)
-df_m_blood_type = spark.createDataFrame(list_m_blood_type)
-df_cross = df_m_gender.join(df_m_blood_type)
-df_cross.show()
-```
-
-12秒で終了
-
-
-
-処理時間 1/5
-
-
-
-- 実はMapReduceに任せるべき場合と
-- 任せない方が良い場合があるらしい
-
-
-
-でもcrossjoinを書きたくないよ！
-
-
-
-#はい(^^;;
-
-
-
-## まとめ
-
-
-
-- データの基盤がどんどん勝手にやられる時代になってる
-- でも、DB屋としての知識と感覚はまだ使えそう
-
-
-
-## 前向き
-
-
-
-##### 前向き大事
-
+Sparkの設定は起動時かその前にやるしかないからです。
 
 
 ## ありがとうございました！
