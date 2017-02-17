@@ -271,8 +271,14 @@ HDFSに出力したとき、やはり生csvがみたくなることがある
 
 
 
-- HDFS上では、 `$ hadoop fs -getmerge hoge/ hoge.csv`
-- Mac上では、 `$ mv hoge/part-*.csv hoge.csv`
+- HDFS上では、 
+  ```
+  $ hadoop fs -getmerge hoge/ hoge.csv
+  ```
+- Mac上では、  
+  ```
+  $ mv hoge/part-*.csv hoge.csv
+  ```
 - Macのときはrepartition(1)も必要
 
 
