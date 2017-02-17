@@ -124,14 +124,6 @@ MapReduceを実現したミドルウェア、Hadoopの進化版
 何か起きたら、環境の不備を確認するHello World
 
 ```Python
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StringType
-from pyspark.sql.types import StructField
-from pyspark.sql.types import StructType
-
-
-def main():
-    """main function."""
     spark = SparkSession.builder.appName("HelloWorld").getOrCreate()
     hw_schema = StructType([
         StructField('hello', StringType(), True),
@@ -140,9 +132,6 @@ def main():
     df = spark.createDataFrame(hello, schema=hw_schema)
     df.show()
     spark.stop()
-
-if __name__ == '__main__':
-    main()
 ```
 
 
@@ -200,99 +189,6 @@ Sparkはやっぱり機械学習で使われる
 
 
 
-```
-from pyspark.sql import SparkSession
-from pyspark.sql.types import FloatType
-from pyspark.sql.types import StringType
-from pyspark.sql.types import StructField
-from pyspark.sql.types import StructType
-
-
-def main():
-    """main function."""
-    spark = SparkSession.builder.appName("HelloWorld").getOrCreate()
-    df_schema = StructType([
-        StructField('key', StringType(), True),
-        StructField('id', StringType(), True),
-        StructField('col1', FloatType(), True),
-        StructField('col2', FloatType(), True),
-        StructField('col3', FloatType(), True),
-    ])
-    data1 = [
-        ['key1', 'id1', 1.0, 1.1, 1.01],
-        ['key2', 'id1', 2.0, 2.1, 2.01],
-        ['key3', 'id2', 3.0, 3.1, 3.01],
-    ]
-    data2 = [
-        ['key1', 'id1', 1.1, 1.2, 1.11],
-        ['key2', 'id1', 2.01, 2.11, 2.02],
-        ['key3', 'id2', 3.001, 3.101, 3.011],
-    ]
-    df1 = spark.createDataFrame(data1, schema=df_schema)
-    df2 = spark.createDataFrame(data2, schema=df_schema)
-
-    # get diff.
-    keys = ['key', 'id']
-    show_dataframe_diff(df1, df2, keys)
-
-    spark.stop()
-
-def show_dataframe_diff(df1, df2, keys):
-    # diff setting.
-    expr = "-"  # for select_cond.
-    n_digit = 1  # for around function.
-    gosa = 0.1
-
-    def make_cond(col1, col2, expr, n_digit=None):
-        cond = 'abs(' + col1 + ' ' + expr + ' ' + col2 + ')'
-        if n_digit is not None:
-            cond = 'round(' + cond + ', ' + str(n_digit) + ')'
-        return cond
-
-    # prepare for diff, change col_name on each DataFrame.
-    columns_df1 = []
-    columns_df1 += keys
-    columns_df2 = []
-    columns_df2 += keys
-    select_cond = []
-    select_cond += keys
-    for i in xrange(len(keys), len(df1.columns)):
-        col_df1 = "df1_" + df1.columns[i]
-        col_df2 = "df2_" + df2.columns[i]
-        cond = str(col_df1) + expr + str(col_df2)
-        cond = 'abs(round(' + cond + ', ' + str(n_digit) + '))'
-        cond = make_cond(col_df1, col_df2, expr, n_digit)
-        columns_df1.append(col_df1)
-        columns_df2.append(col_df2)
-        select_cond.append(cond)
-    df1 = df1.toDF(*columns_df1)
-    df2 = df2.toDF(*columns_df2)
-
-    # show diff.
-    df_diff = df1.join(df2, keys)
-    df_diff = df_diff.selectExpr(select_cond)
-    df_diff.show()
-
-    # prepare for filter.
-    filter_cond = []
-    for i in xrange(len(keys), len(df_diff.columns)):
-        cond = df_diff.columns[i] + " > " + str(gosa)
-        df_diff = df_diff.where(cond)
-
-    # return.
-    diff_col_cnt = df_diff.count()
-    if diff_col_cnt > 0:
-        df_diff.show()
-        return False
-    else:
-        return True
-
-if __name__ == '__main__':
-    main()
-```
-
-
-
 ### テストコード
 
 
@@ -323,7 +219,7 @@ Spark APIで書いたテストのコードは、StackOverFlowですらあてに�
 
 
 
-```
+```Python
 result = df.select('id', 'name', 'value').collect()
 print result[0]['value']
 ```
