@@ -123,7 +123,7 @@ MapReduceを実現したミドルウェア、Hadoopの進化版
 
 何か起きたら、環境の不備を確認するHello World
 
-```Python
+```
 #!/usr/bin/env python
 # -*- encoding:utf-8 -*-
 """sample code for spark."""
@@ -204,7 +204,7 @@ Sparkはやっぱり機械学習で使われる
 
 
 
-```Python
+```
 from pyspark.sql import SparkSession
 from pyspark.sql.types import FloatType
 from pyspark.sql.types import StringType
@@ -327,7 +327,7 @@ Spark APIで書いたテストのコードは、StackOverFlowですらあてに�
 
 
 
-```Python
+```
 result = df.select('id', 'name', 'value').collect()
 print result[0]['value']
 ```
