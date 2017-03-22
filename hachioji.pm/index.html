@@ -21,124 +21,102 @@
 
 class: center, middle
 
-# LT - karashi39
+# TM - karashi39
 
-hachioji.pm #62
+hachioji.pm #65
 
 ---
 
 # karashi39とはいったい
 
-- データベースのファーマシーだったことがある(出所しました)
-- さいきんプログラマーになりました
-- Toda.webというものをやりました
-- WEBをやったことがない
+- DB代理店を脱出
+- PGになるべくSES系企業に転職
+- そこを裏切りお客様である小さい開発屋に転職
+- 風邪をひく
 
 @arashi39karashi
 
 ---
 
+# 余談1
+
+あまりしてこなかった自己紹介
+
+- 万年筆の人 (Pelikan Hubs Tokyo 幹事)
+- パイプの人 (西東京煙管愛好者倶楽部 システム担当)
+- 靴磨きの人
+- れこーず6人目のギタリスト
+
+@AllaSamichi
+---
+
+# 余談2
+
+Saitama.webをやりだしました
+
+「ひじょうにゆるいこと」と、「かっこいいさいたま」がテーマ
+
+Tachikawa.pmはあきらさん主催です
+
+「さらにハードルを下げる」を目指しています
+
+@karashi_39
+
+---
+
+# 余談3
+
+`TM` というのを考えています
+
+`tell me/teach me`
+
+もはや自分が何かを伝えようというスタイルでは勉強会のハードルは下がらなそう
+
+ハードルアレルギーなのでハードルを下げたい
+
+---
+
+# 本題
+
+---
+
 # さいきんの話
 
-Apache Spark をやってます
-
-MapReduceをやるやつらしい
+`trueが1って本当なの？`
 
 ---
 
-# MapReduceとは...?
+最近、いつもと違うPJのヘルプをさせられ
 
-![MapReduce Icon](http://www.kitaiti.com/resources/upload/products/thumbnail2/327056.jpg)
+iniのパーサーのテスト仕様書を任された
 
-たぶんみなさん知っているので釈迦に説法はスキップ
+コードはよくわからない
 
----
-class: middle
-
-## StorageLevelのふしぎ
-
-- MEMORY_ONLY
-- MEMORY_ONLY_SER
-- DISK_AND_MEMORY
-- DISK_AND_MEMORY_SER
-- DISK_ONLY
-
-処理途中のデータをどう保持するかのパラメータ
+数字のところにtrueを突っ込むテストを書いた
 
 ---
 
-class: middle
+みなさん「え？なにそれ」
 
-pythonでやったばあい、_SERがついていてもついていなくても同じ
+みなさん「記号とかそういうのだけやってくれればいいんだけど」
 
-アパッチ氏「いつでもシリアライズしてるんやで」
+みなさん「ちょっと考えさせてください」
 
-> Note: In Python, stored objects will **always be serialized** with the Pickle library, so it does not matter whether you choose a serialized level. The available storage levels in Python include MEMORY_ONLY, MEMORY_ONLY_2, MEMORY_AND_DISK, MEMORY_AND_DISK_2, DISK_ONLY, and DISK_ONLY_2.
+みなさん「納期はすぐそこだぞ」
 
-は？
+お客さま「でも品質」
 
----
+みなさん「納期」
 
-## つらいエラー
-
-<hr>
-[Stage 18:>        (3591 + 68) / 140608][Stage 19:>               (0 + 0) / 167]16/12/20 09:31:18 ERROR LiveListenerBus: **Dropping SparkListenerEvent because no remaining room in event queue.** This likely means one of the SparkListeners is too slow and cannot keep up with the rate at which tasks are being started by the scheduler.
-<hr>
-
-キューに処理がたまりすぎてエラー  
-
-キューに入らなかったジョブはやりなおすっぽいけど、  
-本当に大丈夫なのかよくわからなかったし、  
-処理時間はめちゃくちゃながくなるし、  
-スタックトレースがでまくるので、嫌だった  
-
-キューの長さを変えたいけど、ドキュメントにはパラメータがない  
-
----
-class: middle
-
-ぐぐったらPRがマージされてたけど、
-
-[[SPARK-15703] [Scheduler][Core][WebUI] Make ListenerBus event queue size configurable](https://github.com/apache/spark/pull/14269)
-
-> Note:
-I haven't currently documented the configuration entry.
-
-きびしい
-
-なんとかしました
-
----
-class: middle
-
-listenerのevent_queueを馬鹿みたいに増やすと  
-
-無限に終わらなくなって便利  
-
-MapReduceのダメな方の本気を見ることができました  
+お客さま「品質」
 
 ---
 
-### 余談
+## TM
 
-```
-spark.executor.cores
-```
-
-コア数をきめるやつ  
-スレーブマシンの中にいる、executorというワーカーに割り当てるCPUのコア数  
-
-用語がぐちゃぐちゃで会話がつらい  
-AWSのEMRのワーカーノードがCoreと呼ばれているせい  
-
-私「コア数を減らすことでexecutorを増やしてみたんですけど」  
-上司「は？」  
-みたいになる  
+記号だけ、というか、どこまでが最低限のラインなんでしょうか？？
 
 ---
-class: center, middle
-
-PGになりたくて転職したんですが、あまりコードが書けてない
 
 # 仕事をください
     </textarea>
